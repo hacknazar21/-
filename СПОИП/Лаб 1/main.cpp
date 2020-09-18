@@ -22,15 +22,16 @@
 */
 #define N 256
 
+//Переменные 
 char const_string[N] = "Supernova will be the first", edited_string[N], ch;
 int i, cc = 0, itter = 0;
 long int code_error;
 
 #include <iostream>
 
-void Error(long int err_code)
+void Error()
 {
-	switch(err_code)
+	switch(code_error)
 	{
 		case 0:
 		std::cout << "Error 0 - Symbols doesn't match!\n"
@@ -84,14 +85,14 @@ char* Delete(char* s, int n, int l)
 {
 	if (!isAllCorrect(s, n, l)) // Ищем проблемы
 	{
-		Error(code_error); // Если есть ошибки, то выводим его пользователю
+		Error(); // Если есть ошибки, то выводим его пользователю
 		return "\0"; // Возращаем нулевой байт в качестве указания, что что-то пошло не так
 	}
 	i = 0; // Обнуление для пробегания по исходной строке
 	ch = const_string[i]; // Возвращаем на начало строки, чтобы зайти в while
 	while(ch != '\0') // Пока позиция не в конце строки
 	{
-		if (i < n + l - 1 && i >= n-1) i++; // Если позиция в удаляемой	зоне, то накручиваем i, как бы пропуская этот промежуток
+		if (i < n + l - 1 && i >= n-1) i++; // Если позиция находится в удаляемой зоне, то накручиваем i, как бы пропуская этот промежуток
 		else 
 		{
 			ch = const_string[i++]; // Бежим по строке и берем символы
