@@ -23,7 +23,7 @@
 #define N 256
 
 //Переменные 
-char const_string[N] = "Supernova will be the first", edited_string[N], ch;
+char const_string[N], edited_string[N], ch;
 int i, cc = 0, itter = 0;
 long int code_error;
 
@@ -34,15 +34,15 @@ void Error()
 	switch(code_error)
 	{
 		case 0:
-		std::cout << "Error 0 - Symbols doesn't match!\n"
+		std::cout << "\nError 0 - Symbols doesn't match!\n"
 				  << "Please exit and try again";
 		break;
 		case 1:
-		std::cout << "Error 1 - Position is out of range, maybe you entered too long word!\n"
+		std::cout << "\nError 1 - Position is out of range, maybe you entered too long word!\n"
 				  << "Please exit and try again";
 		break;
 		case 2:
-		std::cout << "Error 2- The word longer than line, or position entered incorrect!\n"
+		std::cout << "\nError 2- The word longer than line, or position entered incorrect!\n"
 				  << "Please exit and try again";
 		break;
 	}
@@ -102,6 +102,29 @@ char* Delete(char* s, int n, int l)
 	return edited_string;
 }
 
+char* DeleteNew(char* s, int n, int l)
+{
+	if (!isAllCorrect(s, n, l)) // Ищем проблемы
+	{
+		Error(); // Если есть ошибки, то выводим его пользователю
+		return "\0"; // Возращаем нулевой байт в качестве указания, что что-то пошло не так
+	}
+	i = 0; // Обнуление для пробегания по исходной строке
+	ch = *(const_string+i); // Возвращаем на начало строки, чтобы зайти в while
+	while(ch != '\0') // Пока позиция не в конце строки
+	{
+		if (i < n + l - 1 && i >= n-1) i++; // Если позиция находится в удаляемой зоне, то накручиваем i, как бы пропуская этот промежуток
+		else 
+		{
+			ch = *(const_string+i); // Бежим по строке и берем символы
+			i++;
+			*(edited_string+cc) = ch; // Записываем символы в новую измененную строку
+			cc++;
+		}
+	}
+	return edited_string;
+}
+
 
 int main(int argc, char const *argv[])
 {
@@ -109,17 +132,34 @@ int main(int argc, char const *argv[])
 	char L[N];
 	int pos, len;
 
-	std::cout << "NO Edited: " << const_string << "\n";
-
-	std::cout << "Enter substring: " << "\n";
-	std::cin.getline(L, N);
-	std::cout << "Enter position number: " << "\n";
-	std::cin >> pos;
-	std::cout << "Enter the length: " << "\n";
-	std::cin >> len;
-
+	while(true)
+	{
+		std::cout << "\n\n\nEnter the string: " << "\n";
+		std::cin.getline(const_string, N);
+		std::cout << "Enter substring: " << "\n";
+		std::cin.getline(L, N);
+		std::cout << "Enter position number: " << "\n";
+		std::cin >> pos;
+		if (std::cin.fail()) // если предыдущее извлечение было неудачным,
+		{
+		    std::cin.clear(); // то возвращаем cin в 'обычный' режим работы
+		    std::cin.ignore(32767,'\n'); // и удаляем значения предыдущего ввода из входного буфера
+		    continue;
+		}
+		std::cout << "Enter the length: " << "\n";
+		std::cin >> len;
+		if (std::cin.fail()) // если предыдущее извлечение было неудачным,
+		{
+			std::cin.clear(); // то возвращаем cin в 'обычный' режим работы
+			std::cin.ignore(32767,'\n'); // и удаляем значения предыдущего ввода из входного буфера
+		}
+		else break;
+	}
 	
-	std::cout << "Edited: " << Delete(L, pos, len) << "\n";
-	std::cin.getline(L, N);
+	std::cout << "Edited var1: " << Delete(L, pos, len) << "\n";
+	std::cout << "Edited var2: " << DeleteNew(L, pos, len) << "\n";
+
+	std::cin >> pos;
+
 	return 0;
 }
